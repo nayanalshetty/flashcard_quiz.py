@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to top, #89f7fe, #66a6ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .weather-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            width: 300px;
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #1E90FF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0b66c3;
+        }
+
+        .weather-result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-container">
+        <h1>Weather App</h1>
+        <input type="text" id="cityInput" placeholder="Enter your city">
+        <button id="getWeatherBtn">Get Temperature</button>
+        <div id="weatherResult" class="weather-result"></div>
+    </div>
+
+    <script>
+        const apiKey = "73edb2a2f30e4c34ad3141306250812";
+        const getWeatherBtn = document.getElementById('getWeatherBtn');
+        const cityInput = document.getElementById('cityInput');
+        const weatherResult = document.getElementById('weatherResult');
+
+        getWeatherBtn.addEventListener('click', () => {
+            const city = cityInput.value.trim();
+            if(city === "") {
+                weatherResult.innerHTML = "<p style='color:red;'>Please enter a city!</p>";
+                return;
+            }
+            fetchWeather(city);
+        });
+
+        function fetchWeather(city) {
+            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error("City not found!");
+                    return response.json();
+                })
+                .then(data => {
+                    displayWeather(data);
+                })
+                .catch(error => {
+                    weatherResult.innerHTML = `<p style="color:red;">${error.message}</p>`;
+                });
+        }
+
+        function displayWeather(data) {
+            weatherResult.innerHTML = `
+                <p>Temperature in <strong>${data.location.name}, ${data.location.country}</strong>:</p>
+                <h2>${data.current.temp_c}°C</h2>
+                <p>Condition: ${data.current.condition.text}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
